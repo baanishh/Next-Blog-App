@@ -25,30 +25,42 @@ const Page = () => {
     console.log(data);
   }
 
-    const onSubmitHandler=async (e)=>{
-      e.preventDefault()
-      const formData=new FormData()
-      formData.append("title",data.title)
-      formData.append("description",data.description)
-      formData.append("category",data.category)
-      formData.append("author",data.author)
-      formData.append("authorImg",data.authorImg)
-      formData.append("image",image)
-      const response=await axios.post('/api/blog',formData)
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("category", data.category);
+    formData.append("author", data.author);
+    formData.append("authorImg", data.authorImg);
+    formData.append("image", image);
+  
+    try {
+      const response = await axios.post('/api/blog', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
       if (response.data.success) {
-        toast.success(response.data.msg)
-        setImage(false)
+        toast.success(response.data.msg);
+        setImage(false);
         setData({
-          title:"",
-          description:"",
-          category:"Startup",
-          author:"Banish",
-          authorImg:"/author_icon.png"
-        })
-      }else{
-        toast.error("Error")
+          title: "",
+          description: "",
+          category: "Startup",
+          author: "Banish",
+          authorImg: "/author_icon.png",
+        });
+      } else {
+        toast.error("Error");
       }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Error submitting form");
     }
+  };
+  
 
   return (
     <>
