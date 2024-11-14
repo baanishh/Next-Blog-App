@@ -10,32 +10,39 @@ const LoadDB=async()=>{
 LoadDB()
 
 //save blog 
-export const POST=async(request)=>{
-    const formData=await request.formData()
-    const timestamp=Date.now()
-
-    const image=formData.get("image")
-    const imageByteData=await image.arrayBuffer()
-    const buffer=Buffer.from(imageByteData)
-    const path=`./public/${timestamp}_${image.name}`
-    await writeFile(path,buffer)
-    const imgUrl=`/${timestamp}_${image.name}`
-
-    const blogData={
-        title:`${formData.get('title')}`,
-        description:`${formData.get('description')}`,
-        category:`${formData.get('category')}`,
-        author:`${formData.get('author')}`,
-        image:`${imgUrl}`,
-        authorImg:`${formData.get('authorImg')}`,
-        date:`${timestamp}`
+export const POST = async (request) => {
+    try {
+      const formData = await request.formData();
+      const timestamp = Date.now();
+  
+      const image = formData.get("image");
+      const imageByteData = await image.arrayBuffer();
+      const buffer = Buffer.from(imageByteData);
+      const path = `./public/${timestamp}_${image.name}`;
+  
+      await writeFile(path, buffer);
+  
+      const imgUrl = `/${timestamp}_${image.name}`;
+  
+      const blogData = {
+        title: formData.get('title'),
+        description: formData.get('description'),
+        category: formData.get('category'),
+        author: formData.get('author'),
+        image: imgUrl,
+        authorImg: formData.get('authorImg'),
+        date: timestamp,
+      };
+  
+      await BlogModel.create(blogData);
+      console.log("Blog saved");
+  
+      return NextResponse.json({ success: true, msg: "Blog Added" });
+    } catch (error) {
+      console.error("Error in POST API:", error);
+      return NextResponse.json({ success: false, msg: "Failed to add blog", error: error.message });
     }
-
-    await BlogModel.create(blogData)
-    console.log("Blog saved");
-    
-    return NextResponse.json({success:true,msg:"Blog Addedd"})
-}
+  };
 
 
 //get blog api
